@@ -7,23 +7,23 @@ class RegisterMemberUseCaseTest {
 
     @Test
     void registerNewMember_successfully() {
-        // 1. Arrange (Preparación)
-        // Creamos el caso de uso que vamos a probar
+        // 1. Arrange
+        // We set up the "Use Case" or the class we want to test.
         var registerMemberUseCase = new RegisterMemberUseCase();
 
-        // Datos de entrada para nuestro caso de uso
+        // Input data for our use case.
         String name = "John Doe";
         String email = "john.doe@example.com";
 
-        // 2. Act (Ejecución)
-        // Ejecutamos el caso de uso con los datos de entrada
+        // 2. Act
+        // We execute the method we want to test.
         Member newMember = registerMemberUseCase.execute(name, email);
 
-        // 3. Assert (Verificación)
-        // Verificamos que el resultado es el esperado
-        assertNotNull(newMember, "El socio no debería ser nulo.");
-        assertNotNull(newMember.getMemberId(), "El ID del socio no debería ser nulo tras el registro.");
-        assertEquals(name, newMember.getName(), "El nombre del socio no coincide.");
-        assertEquals(email, newMember.getEmail(), "El email del socio no coincide.");
+        // 3. Assert
+        // We verify that the outcome is what we expected.
+        assertNotNull(newMember, "The member should not be null.");
+        assertNotNull(newMember.getMemberId(), "The member ID should not be null after registration.");
+        assertEquals(name, newMember.getName(), "The member's name does not match.");
+        assertEquals(email, newMember.getEmail(), "The member's email does not match.");
     }
 }
