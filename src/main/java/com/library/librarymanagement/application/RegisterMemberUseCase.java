@@ -14,6 +14,10 @@ public class RegisterMemberUseCase {
     }
 
     public Member execute(String name, String email) {
+        if (email == null || !email.contains("@")) {
+            throw new IllegalArgumentException("Invalid email format.");
+        }
+
         Member member = new Member();
         member.setMemberId(UUID.randomUUID().toString());
         member.setName(name);

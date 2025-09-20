@@ -36,4 +36,14 @@ class RegisterMemberUseCaseTest {
         assertEquals(name, newMember.getName(), "The member's name does not match.");
         assertEquals(email, newMember.getEmail(), "The member's email does not match.");
     }
+
+    @Test
+    void registerNewMember_throwsException_whenEmailIsInvalid() {
+        String invalidEmail = "invalid-email";
+        String name = "Jane Doe";
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            registerMemberUseCase.execute(name, invalidEmail);
+        });
+    }
 }
