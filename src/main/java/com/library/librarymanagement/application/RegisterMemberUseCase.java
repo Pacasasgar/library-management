@@ -2,9 +2,11 @@ package com.library.librarymanagement.application;
 
 import com.library.librarymanagement.domain.Member;
 import com.library.librarymanagement.domain.MemberRepositoryPort;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Service
 public class RegisterMemberUseCase {
 
     private final MemberRepositoryPort memberRepository;
