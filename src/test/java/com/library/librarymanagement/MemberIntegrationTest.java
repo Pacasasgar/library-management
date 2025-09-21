@@ -1,0 +1,43 @@
+package com.library.librarymanagement;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.library.librarymanagement.infrastructure.web.dto.CreateMemberRequest;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class MemberIntegrationTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Test
+    void registerMember_successfully_returns201Created() throws Exception {
+        // 1. Arrange
+        CreateMemberRequest request = new CreateMemberRequest("Jane Doe", "jane.doe@example.com");
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        // 2. Act & 3. Assert
+        mockMvc.perform(post("/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.memberId", notNullValue()))
+                .andExpect(jsonPath("$.name", is("Jane Doe")))
+                .andExpect(jsonPath("$.email", is("jane.doe@example.com")));
+    }
+}
