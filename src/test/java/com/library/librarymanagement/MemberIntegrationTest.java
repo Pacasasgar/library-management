@@ -11,8 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.is;
@@ -80,5 +79,23 @@ class MemberIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void deleteMember_successfully_returns204() throws Exception {
+        CreateMemberRequest request = new CreateMemberRequest("Jane Doe", "jane.doe@example.com");
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        String createdMemberJson = mockMvc.perform(post("/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        Member createdMember = objectMapper.readValue(createdMemberJson, Member.class);
+        String memberId = createdMember.getMemberId();
+
+        mockMvc.perform(delete("/members/" + memberId))
+                .andExpect(status().isNoContent());
     }
 }

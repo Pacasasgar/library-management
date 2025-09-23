@@ -1,5 +1,6 @@
 package com.library.librarymanagement.infrastructure.web;
 
+import com.library.librarymanagement.application.DeleteMemberByIdUseCase;
 import com.library.librarymanagement.application.FindMemberByIdUseCase;
 import com.library.librarymanagement.application.RegisterMemberUseCase;
 import com.library.librarymanagement.domain.Member;
@@ -16,14 +17,18 @@ public class MemberController {
 
     private final RegisterMemberUseCase registerMemberUseCase;
     private final FindMemberByIdUseCase findMemberByIdUseCase;
+    private final DeleteMemberByIdUseCase deleteMemberByIdUseCase;
 
-    public MemberController(RegisterMemberUseCase registerMemberUseCase, FindMemberByIdUseCase findMemberByIdUseCase){
+    public MemberController(RegisterMemberUseCase registerMemberUseCase,
+                            FindMemberByIdUseCase findMemberByIdUseCase,
+                            DeleteMemberByIdUseCase deleteMemberByIdUseCase){
         this.registerMemberUseCase = registerMemberUseCase;
         this.findMemberByIdUseCase = findMemberByIdUseCase;
+        this.deleteMemberByIdUseCase = deleteMemberByIdUseCase;
     }
 
     @PostMapping
-    public ResponseEntity<Member> register(@RequestBody CreateMemberRequest request){
+    public ResponseEntity<Member> register(@RequestBody CreateMemberRequest request) {
         Member newMember = registerMemberUseCase.execute(request.name(), request.email());
         return ResponseEntity.status(HttpStatus.CREATED).body(newMember);
     }
@@ -35,5 +40,11 @@ public class MemberController {
         return memberOptional
                 .map(member -> ResponseEntity.ok(member))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable("id") String memberId) {
+        deleteMemberByIdUseCase.execute(memberId);
+        return ResponseEntity.noContent().build();
     }
 }
