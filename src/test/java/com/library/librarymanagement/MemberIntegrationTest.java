@@ -3,6 +3,7 @@ package com.library.librarymanagement;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.library.librarymanagement.domain.Member;
 import com.library.librarymanagement.infrastructure.web.dto.CreateMemberRequest;
+import com.library.librarymanagement.infrastructure.web.dto.UpdateMemberRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -97,5 +98,35 @@ class MemberIntegrationTest {
 
         mockMvc.perform(delete("/members/" + memberId))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void updateMemberName_successfully_returns200Ok() throws Exception {
+        // Arrange
+        CreateMemberRequest createRequest = new CreateMemberRequest("Jane Doe", "jane.doe@example.com");
+        String createRequestJson = objectMapper.writeValueAsString(createRequest);
+
+        String createdMemberJson = mockMvc.perform(post("/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createRequestJson))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        Member createdMember = objectMapper.readValue(createdMemberJson, Member.class);
+        String memberId = createdMember.getMemberId();
+        String memberEmail = createdMember.getEmail();
+
+        // Prepare the update request, changing only the name
+        UpdateMemberRequest updateRequest = new UpdateMemberRequest("Jane Smith", memberEmail);
+        String updateRequestJson = objectMapper.writeValueAsString(updateRequest);
+
+        // Act & Assert
+        mockMvc.perform(put("/members/" + memberId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequestJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.memberId", is(memberId)))
+                .andExpect(jsonPath("$.name", is("Jane Smith"))) // Verify the new name
+                .andExpect(jsonPath("$.email", is(memberEmail))); // Verify the email is unchanged
     }
 }
