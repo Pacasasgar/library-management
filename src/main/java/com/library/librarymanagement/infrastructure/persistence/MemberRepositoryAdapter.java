@@ -55,4 +55,9 @@ public class MemberRepositoryAdapter implements MemberRepositoryPort {
             return member;
         });
     }
+
+    @Override
+    public void deleteById(String memberId) {
+        memberJpaRepository.deleteById(memberId);
+    }
 }

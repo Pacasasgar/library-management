@@ -3,6 +3,7 @@ package com.library.librarymanagement;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.library.librarymanagement.domain.Member;
 import com.library.librarymanagement.infrastructure.web.dto.CreateMemberRequest;
+import com.library.librarymanagement.infrastructure.web.dto.UpdateMemberRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -11,8 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.is;
@@ -64,5 +64,69 @@ class MemberIntegrationTest {
                 .andExpect(status().isOk()) // HTTP 200 OK
                 .andExpect(jsonPath("$.memberId", is(memberId)))
                 .andExpect(jsonPath("$.name", is("Jane Doe")));
+    }
+
+    @Test
+    void registerMember_returns409Conflict_whenEmailIsDuplicated() throws Exception {
+        CreateMemberRequest request = new CreateMemberRequest("Jane Doe", "jane.doe@example.com");
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(post("/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void deleteMember_successfully_returns204() throws Exception {
+        CreateMemberRequest request = new CreateMemberRequest("Jane Doe", "jane.doe@example.com");
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        String createdMemberJson = mockMvc.perform(post("/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        Member createdMember = objectMapper.readValue(createdMemberJson, Member.class);
+        String memberId = createdMember.getMemberId();
+
+        mockMvc.perform(delete("/members/" + memberId))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void updateMemberName_successfully_returns200Ok() throws Exception {
+        // Arrange
+        CreateMemberRequest createRequest = new CreateMemberRequest("Jane Doe", "jane.doe@example.com");
+        String createRequestJson = objectMapper.writeValueAsString(createRequest);
+
+        String createdMemberJson = mockMvc.perform(post("/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createRequestJson))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        Member createdMember = objectMapper.readValue(createdMemberJson, Member.class);
+        String memberId = createdMember.getMemberId();
+        String memberEmail = createdMember.getEmail();
+
+        // Prepare the update request, changing only the name
+        UpdateMemberRequest updateRequest = new UpdateMemberRequest("Jane Smith", memberEmail);
+        String updateRequestJson = objectMapper.writeValueAsString(updateRequest);
+
+        // Act & Assert
+        mockMvc.perform(put("/members/" + memberId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequestJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.memberId", is(memberId)))
+                .andExpect(jsonPath("$.name", is("Jane Smith"))) // Verify the new name
+                .andExpect(jsonPath("$.email", is(memberEmail))); // Verify the email is unchanged
     }
 }
