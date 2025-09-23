@@ -43,4 +43,16 @@ public class MemberRepositoryAdapter implements MemberRepositoryPort {
             return member;
         });
     }
+
+    @Override
+    public Optional<Member> findById(String memberId) {
+        Optional<MemberEntity> memberEntityOptional = memberJpaRepository.findById(memberId);
+        return memberEntityOptional.map(entity -> {
+            Member member = new Member();
+            member.setMemberId(entity.getMemberId());
+            member.setName(entity.getName());
+            member.setEmail(entity.getEmail());
+            return member;
+        });
+    }
 }
