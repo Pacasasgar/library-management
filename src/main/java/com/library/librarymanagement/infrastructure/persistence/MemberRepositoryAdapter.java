@@ -4,6 +4,8 @@ import com.library.librarymanagement.domain.Member;
 import com.library.librarymanagement.domain.MemberRepositoryPort;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class MemberRepositoryAdapter implements MemberRepositoryPort {
 
@@ -28,5 +30,17 @@ public class MemberRepositoryAdapter implements MemberRepositoryPort {
         result.setEmail(savedEntity.getEmail());
 
         return result;
+    }
+
+    @Override
+    public Optional<Member> findByEmail(String email) {
+        Optional<MemberEntity> memberEntityOptional = memberJpaRepository.findByEmail(email);
+        return memberEntityOptional.map(entity -> {
+            Member member = new Member();
+            member.setMemberId(entity.getMemberId());
+            member.setName(entity.getName());
+            member.setEmail(entity.getEmail());
+            return member;
+        });
     }
 }

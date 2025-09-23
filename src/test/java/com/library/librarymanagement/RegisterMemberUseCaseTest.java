@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -44,6 +46,23 @@ class RegisterMemberUseCaseTest {
 
         assertThrows(IllegalArgumentException.class, () -> {
             registerMemberUseCase.execute(name, invalidEmail);
+        });
+    }
+
+    @Test
+    void registerNewMember_throwsException_whenEmailAlreadyExists() {
+        String existingEmail = "john.doe@example.com";
+        String name = "Johnathan Doe";
+
+        Member existingMember = new Member();
+        existingMember.setMemberId("some-id");
+        existingMember.setName("John Doe");
+        existingMember.setEmail(existingEmail);
+
+        when(memberRepository.findByEmail(existingEmail)).thenReturn(Optional.of(existingMember));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            registerMemberUseCase.execute(name, existingEmail);
         });
     }
 }
