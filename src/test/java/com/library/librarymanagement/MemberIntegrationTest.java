@@ -65,4 +65,20 @@ class MemberIntegrationTest {
                 .andExpect(jsonPath("$.memberId", is(memberId)))
                 .andExpect(jsonPath("$.name", is("Jane Doe")));
     }
+
+    @Test
+    void registerMember_returns409Conflict_whenEmailIsDuplicated() throws Exception {
+        CreateMemberRequest request = new CreateMemberRequest("Jane Doe", "jane.doe@example.com");
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(post("/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isConflict());
+    }
 }
