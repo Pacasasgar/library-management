@@ -20,6 +20,10 @@ public class RegisterMemberUseCase {
             throw new IllegalArgumentException("Invalid email format.");
         }
 
+        if (memberRepository.findByEmail(email).isPresent()){
+            throw new IllegalArgumentException("Email already exists.");
+        }
+
         Member member = new Member();
         member.setMemberId(UUID.randomUUID().toString());
         member.setName(name);
