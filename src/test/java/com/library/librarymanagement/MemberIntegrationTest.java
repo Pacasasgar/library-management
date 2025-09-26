@@ -102,7 +102,6 @@ class MemberIntegrationTest {
 
     @Test
     void updateMemberName_successfully_returns200Ok() throws Exception {
-        // Arrange
         CreateMemberRequest createRequest = new CreateMemberRequest("Jane Doe", "jane.doe@example.com");
         String createRequestJson = objectMapper.writeValueAsString(createRequest);
 
@@ -116,11 +115,9 @@ class MemberIntegrationTest {
         String memberId = createdMember.getMemberId();
         String memberEmail = createdMember.getEmail();
 
-        // Prepare the update request, changing only the name
         UpdateMemberRequest updateRequest = new UpdateMemberRequest("Jane Smith", memberEmail);
         String updateRequestJson = objectMapper.writeValueAsString(updateRequest);
 
-        // Act & Assert
         mockMvc.perform(put("/members/" + memberId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateRequestJson))
