@@ -63,4 +63,20 @@ public class BookIntegrationTest {
                 .andExpect(jsonPath("$.author", is("Brandon Sanderson")))
                 .andExpect(jsonPath("$.isbn", is("0000")));
     }
+
+    @Test
+    void registerBook_returns409Conflict_whenIsbnIsDuplicated() throws Exception {
+        CreateBookRequest request = new CreateBookRequest("Mistborn", "Brandon Sanderson", "0000");
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isConflict());
+    }
 }

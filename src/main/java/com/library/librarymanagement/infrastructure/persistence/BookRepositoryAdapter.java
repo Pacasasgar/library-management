@@ -46,4 +46,17 @@ public class BookRepositoryAdapter implements BookRepositoryPort {
             return book;
         });
     }
+
+    @Override
+    public Optional<Book> findByIsbn(String isbn) {
+        Optional<BookEntity> bookEntityOptional = bookJpaRepository.findByIsbn(isbn);
+        return bookEntityOptional.map(entity -> {
+            Book book = new Book();
+            book.setBookId(entity.getBookId());
+            book.setTitle(entity.getTitle());
+            book.setAuthor(entity.getAuthor());
+            book.setIsbn(entity.getIsbn());
+            return book;
+        });
+    }
 }

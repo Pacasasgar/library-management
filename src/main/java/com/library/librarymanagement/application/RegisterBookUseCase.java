@@ -16,6 +16,10 @@ public class RegisterBookUseCase {
     }
 
     public Book execute(String title, String author, String isbn) {
+        if(bookRepository.findByIsbn(isbn).isPresent()) {
+            throw new IllegalArgumentException("ISBN already exists.");
+        }
+
         Book book = new Book();
         book.setBookId(UUID.randomUUID().toString());
         book.setTitle(title);

@@ -33,4 +33,9 @@ public class ApplicationConfig {
     public RegisterBookUseCase registerBookUseCase(BookRepositoryPort bookRepositoryPort) {
         return new RegisterBookUseCase(bookRepositoryPort);
     }
+
+    @Bean
+    public FindBookByIdUseCase findBookByIdUseCase(BookRepositoryPort bookRepositoryPort) {
+        return new FindBookByIdUseCase(bookRepositoryPort);
+    }
 }
