@@ -1,5 +1,6 @@
 package com.library.librarymanagement.infrastructure.web;
 
+import com.library.librarymanagement.application.DeleteBookByIdUseCase;
 import com.library.librarymanagement.application.FindBookByIdUseCase;
 import com.library.librarymanagement.application.RegisterBookUseCase;
 import com.library.librarymanagement.domain.Book;
@@ -16,11 +17,14 @@ public class BookController {
 
     private final RegisterBookUseCase registerBookUseCase;
     private final FindBookByIdUseCase findBookByIdUseCase;
+    private final DeleteBookByIdUseCase deleteBookByIdUseCase;
 
     public BookController(RegisterBookUseCase registerBookUseCase,
-                          FindBookByIdUseCase findBookByIdUseCase) {
+                          FindBookByIdUseCase findBookByIdUseCase,
+                          DeleteBookByIdUseCase deleteBookByIdUseCase) {
         this.registerBookUseCase = registerBookUseCase;
         this.findBookByIdUseCase = findBookByIdUseCase;
+        this.deleteBookByIdUseCase = deleteBookByIdUseCase;
     }
 
     @PostMapping
@@ -36,5 +40,11 @@ public class BookController {
         return bookOptional
                 .map(book -> ResponseEntity.ok(book))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable("id") String bookId) {
+        deleteBookByIdUseCase.execute(bookId);
+        return ResponseEntity.noContent().build();
     }
 }
