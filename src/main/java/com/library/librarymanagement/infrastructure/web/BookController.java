@@ -3,8 +3,10 @@ package com.library.librarymanagement.infrastructure.web;
 import com.library.librarymanagement.application.DeleteBookByIdUseCase;
 import com.library.librarymanagement.application.FindBookByIdUseCase;
 import com.library.librarymanagement.application.RegisterBookUseCase;
+import com.library.librarymanagement.application.UpdateBookUseCase;
 import com.library.librarymanagement.domain.Book;
 import com.library.librarymanagement.infrastructure.web.dto.CreateBookRequest;
+import com.library.librarymanagement.infrastructure.web.dto.UpdateBookRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +20,16 @@ public class BookController {
     private final RegisterBookUseCase registerBookUseCase;
     private final FindBookByIdUseCase findBookByIdUseCase;
     private final DeleteBookByIdUseCase deleteBookByIdUseCase;
+    private final UpdateBookUseCase updateBookUseCase;
 
     public BookController(RegisterBookUseCase registerBookUseCase,
                           FindBookByIdUseCase findBookByIdUseCase,
-                          DeleteBookByIdUseCase deleteBookByIdUseCase) {
+                          DeleteBookByIdUseCase deleteBookByIdUseCase,
+                          UpdateBookUseCase updateBookUseCase) {
         this.registerBookUseCase = registerBookUseCase;
         this.findBookByIdUseCase = findBookByIdUseCase;
         this.deleteBookByIdUseCase = deleteBookByIdUseCase;
+        this.updateBookUseCase = updateBookUseCase;
     }
 
     @PostMapping
@@ -46,5 +51,12 @@ public class BookController {
     public ResponseEntity<Void> deleteById(@PathVariable("id") String bookId) {
         deleteBookByIdUseCase.execute(bookId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Book> updateById(@PathVariable("id") String bookId,
+                                           @RequestBody UpdateBookRequest request) {
+        Book updatedBook = updateBookUseCase.execute(bookId, request);
+        return ResponseEntity.ok(updatedBook);
     }
 }
