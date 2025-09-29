@@ -17,6 +17,10 @@ public class RegisterLoanUseCase {
     }
 
     public Loan execute(String memberId, String bookId) {
+        if (loanRepository.findByBookId(bookId).isPresent()) {
+            throw new IllegalStateException("Book is already loaned.");
+        }
+
         Loan loan = new Loan();
         loan.setLoanId(UUID.randomUUID().toString());
         loan.setMemberId(memberId);

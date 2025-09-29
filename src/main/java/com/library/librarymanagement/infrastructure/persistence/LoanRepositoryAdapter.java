@@ -43,7 +43,16 @@ public class LoanRepositoryAdapter implements LoanRepositoryPort {
 
     @Override
     public Optional<Loan> findByBookId(String bookId) {
-        return Optional.empty();
+        Optional<LoanEntity> loanEntityOptional = loanJpaRepository.findByBook_BookId(bookId);
+        return loanEntityOptional.map(entity -> {
+           Loan loan = new Loan();
+           loan.setLoanId(entity.getLoanId());
+           loan.setMemberId(entity.getMember().getMemberId());
+           loan.setBookId(entity.getBook().getBookId());
+           loan.setLoanDate(entity.getLoanDate());
+           loan.setDueDate(entity.getDueDate());
+           return loan;
+        });
     }
 
     private Loan mapToDomain(LoanEntity entity) {
