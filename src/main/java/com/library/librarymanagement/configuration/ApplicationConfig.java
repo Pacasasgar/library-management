@@ -38,4 +38,9 @@ public class ApplicationConfig {
     public FindBookByIdUseCase findBookByIdUseCase(BookRepositoryPort bookRepositoryPort) {
         return new FindBookByIdUseCase(bookRepositoryPort);
     }
+
+    @Bean
+    public DeleteBookByIdUseCase deleteBookByIdUseCase(BookRepositoryPort bookRepositoryPort) {
+        return new DeleteBookByIdUseCase(bookRepositoryPort);
+    }
 }
