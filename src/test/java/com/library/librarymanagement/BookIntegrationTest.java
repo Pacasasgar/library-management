@@ -3,6 +3,7 @@ package com.library.librarymanagement;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.library.librarymanagement.domain.Book;
 import com.library.librarymanagement.infrastructure.web.dto.CreateBookRequest;
+import com.library.librarymanagement.infrastructure.web.dto.UpdateBookRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -95,5 +96,34 @@ public class BookIntegrationTest {
 
         mockMvc.perform(delete("/books/" + bookId))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void updateBookTitle_successfully_returns200Ok() throws Exception {
+        CreateBookRequest request = new CreateBookRequest("Mistborn", "Brandon Sanderson", "0000");
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        String createdBookJson = mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        Book createdBook = objectMapper.readValue(createdBookJson, Book.class);
+        String bookId = createdBook.getBookId();
+        String bookAuthor = createdBook.getAuthor();
+        String bookIsbn = createdBook.getIsbn();
+
+        UpdateBookRequest updateRequest = new UpdateBookRequest("El Imperio Final", bookAuthor, bookIsbn);
+        String updateRequestJson = objectMapper.writeValueAsString(updateRequest);
+
+        mockMvc.perform(put("/books/" + bookId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequestJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.bookId", is(bookId)))
+                .andExpect(jsonPath("$.title", is("El Imperio Final")))
+                .andExpect(jsonPath("$.author", is(bookAuthor)))
+                .andExpect(jsonPath("$.isbn", is(bookIsbn)));
     }
 }
