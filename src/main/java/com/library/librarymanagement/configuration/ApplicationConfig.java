@@ -2,6 +2,7 @@ package com.library.librarymanagement.configuration;
 
 import com.library.librarymanagement.application.*;
 import com.library.librarymanagement.domain.BookRepositoryPort;
+import com.library.librarymanagement.domain.LoanRepositoryPort;
 import com.library.librarymanagement.domain.MemberRepositoryPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,5 +48,10 @@ public class ApplicationConfig {
     @Bean
     public UpdateBookUseCase updateBookUseCase(BookRepositoryPort bookRepositoryPort) {
         return new UpdateBookUseCase(bookRepositoryPort);
+    }
+
+    @Bean
+    public RegisterLoanUseCase registerLoanUseCase(LoanRepositoryPort loanRepositoryPort) {
+        return new RegisterLoanUseCase(loanRepositoryPort);
     }
 }
