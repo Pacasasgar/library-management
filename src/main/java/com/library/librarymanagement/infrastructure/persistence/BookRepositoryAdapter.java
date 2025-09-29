@@ -59,4 +59,9 @@ public class BookRepositoryAdapter implements BookRepositoryPort {
             return book;
         });
     }
+
+    @Override
+    public void deleteById(String bookId) {
+        bookJpaRepository.deleteById(bookId);
+    }
 }

@@ -11,8 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.is;
@@ -78,5 +77,23 @@ public class BookIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void deleteBook_successfully_returns204() throws Exception {
+        CreateBookRequest request = new CreateBookRequest("Mistborn", "Brandon Sanderson", "0000");
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        String createdBookJson = mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        Book createdBook = objectMapper.readValue(createdBookJson, Book.class);
+        String bookId = createdBook.getBookId();
+
+        mockMvc.perform(delete("/books/" + bookId))
+                .andExpect(status().isNoContent());
     }
 }
