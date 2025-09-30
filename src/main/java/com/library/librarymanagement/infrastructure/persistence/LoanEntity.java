@@ -22,4 +22,5 @@ public class LoanEntity {
 
     private LocalDate loanDate;
     private LocalDate dueDate;
+    private LocalDate returnDate;
 }

@@ -35,10 +35,17 @@ public class LoanRepositoryAdapter implements LoanRepositoryPort {
         loanEntity.setBook(bookEntity);
         loanEntity.setLoanDate(loan.getLoanDate());
         loanEntity.setDueDate(loan.getDueDate());
+        loanEntity.setReturnDate(loan.getReturnDate());
 
         LoanEntity savedEntity = loanJpaRepository.save(loanEntity);
 
         return mapToDomain(savedEntity);
+    }
+
+    @Override
+    public Optional<Loan> findById(String loanId) {
+        Optional<LoanEntity> loanEntityOptional = loanJpaRepository.findById(loanId);
+        return loanEntityOptional.map(this::mapToDomain);
     }
 
     @Override
@@ -62,6 +69,7 @@ public class LoanRepositoryAdapter implements LoanRepositoryPort {
         domainLoan.setBookId(entity.getBook().getBookId());
         domainLoan.setLoanDate(entity.getLoanDate());
         domainLoan.setDueDate(entity.getDueDate());
+        domainLoan.setReturnDate(entity.getReturnDate());
         return domainLoan;
     }
 }

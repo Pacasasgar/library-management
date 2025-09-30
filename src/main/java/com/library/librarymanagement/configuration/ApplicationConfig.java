@@ -54,4 +54,9 @@ public class ApplicationConfig {
     public RegisterLoanUseCase registerLoanUseCase(LoanRepositoryPort loanRepositoryPort) {
         return new RegisterLoanUseCase(loanRepositoryPort);
     }
+
+    @Bean
+    public ReturnLoanUseCase returnLoanUseCase(LoanRepositoryPort loanRepositoryPort) {
+        return new ReturnLoanUseCase(loanRepositoryPort);
+    }
 }
