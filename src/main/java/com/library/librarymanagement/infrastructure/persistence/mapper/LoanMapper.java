@@ -7,6 +7,9 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface LoanMapper {
+
+    @Mapping(target = "member", ignore = true)  // we tell MapStruct to ignore both fields as they will be set manually
+    @Mapping(target = "book", ignore = true)
     LoanEntity toEntity(Loan loan);
 
     @Mapping(source = "member.memberId", target = "memberId")
