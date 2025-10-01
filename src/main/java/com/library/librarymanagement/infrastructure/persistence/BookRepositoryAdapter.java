@@ -2,6 +2,7 @@ package com.library.librarymanagement.infrastructure.persistence;
 
 import com.library.librarymanagement.domain.Book;
 import com.library.librarymanagement.domain.BookRepositoryPort;
+import com.library.librarymanagement.infrastructure.persistence.mapper.BookMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -10,54 +11,31 @@ import java.util.Optional;
 public class BookRepositoryAdapter implements BookRepositoryPort {
 
     private final BookJpaRepository bookJpaRepository;
+    private final BookMapper bookMapper;
 
-    public BookRepositoryAdapter(BookJpaRepository bookJpaRepository) {
+    public BookRepositoryAdapter(BookJpaRepository bookJpaRepository,
+                                 BookMapper bookMapper) {
         this.bookJpaRepository = bookJpaRepository;
+        this.bookMapper = bookMapper;
     }
 
     @Override
     public Book save(Book book) {
-        BookEntity bookEntity = new BookEntity();
-        bookEntity.setBookId(book.getBookId());
-        bookEntity.setTitle(book.getTitle());
-        bookEntity.setAuthor(book.getAuthor());
-        bookEntity.setIsbn(book.getIsbn());
-
+        BookEntity bookEntity = bookMapper.toEntity(book);
         BookEntity savedEntity = bookJpaRepository.save(bookEntity);
-
-        Book result = new Book();
-        result.setBookId(savedEntity.getBookId());
-        result.setTitle(savedEntity.getTitle());
-        result.setAuthor(savedEntity.getAuthor());
-        result.setIsbn(savedEntity.getIsbn());
-
-        return result;
+        return bookMapper.toDomain(savedEntity);
     }
 
     @Override
     public Optional<Book> findById(String bookId) {
         Optional<BookEntity> bookEntityOptional = bookJpaRepository.findById(bookId);
-        return bookEntityOptional.map(entity -> {
-            Book book = new Book();
-            book.setBookId(entity.getBookId());
-            book.setTitle(entity.getTitle());
-            book.setAuthor(entity.getAuthor());
-            book.setIsbn(entity.getIsbn());
-            return book;
-        });
+        return bookEntityOptional.map(bookMapper::toDomain);
     }
 
     @Override
     public Optional<Book> findByIsbn(String isbn) {
         Optional<BookEntity> bookEntityOptional = bookJpaRepository.findByIsbn(isbn);
-        return bookEntityOptional.map(entity -> {
-            Book book = new Book();
-            book.setBookId(entity.getBookId());
-            book.setTitle(entity.getTitle());
-            book.setAuthor(entity.getAuthor());
-            book.setIsbn(entity.getIsbn());
-            return book;
-        });
+        return bookEntityOptional.map(bookMapper::toDomain);
     }
 
     @Override

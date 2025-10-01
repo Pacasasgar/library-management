@@ -2,6 +2,7 @@ package com.library.librarymanagement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.library.librarymanagement.domain.Book;
+import com.library.librarymanagement.domain.Loan;
 import com.library.librarymanagement.domain.Member;
 import com.library.librarymanagement.infrastructure.web.dto.CreateBookRequest;
 import com.library.librarymanagement.infrastructure.web.dto.CreateLoanRequest;
@@ -48,6 +49,21 @@ public class LoanIntegrationTest {
                 .andExpect(jsonPath("$.bookId", is(createdBook.getBookId())));
     }
 
+    @Test
+    void returnLoan_successfully_updatesReturnDateAndReturns200Ok() throws Exception {
+        Member createdMember = createMemberViaApi(new CreateMemberRequest("John Doe", "john.doe@example.com"));
+        Book createdBook = createBookViaApi(new CreateBookRequest("Mistborn", "Brandon Sanderson", "12345"));
+        Loan createdLoan = createLoanViaApi(new CreateLoanRequest(createdMember.getMemberId(), createdBook.getBookId()));
+        String loanId = createdLoan.getLoanId();
+
+        mockMvc.perform(put("/loans/" + loanId + "/return")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.loanId", is(loanId)))
+                .andExpect(jsonPath("$.returnDate", notNullValue()));
+    }
+
     private Member createMemberViaApi(CreateMemberRequest request) throws Exception {
         String requestJson = objectMapper.writeValueAsString(request);
         String responseJson = mockMvc.perform(post("/members")
@@ -66,5 +82,15 @@ public class LoanIntegrationTest {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         return objectMapper.readValue(responseJson, Book.class);
+    }
+
+    private Loan createLoanViaApi(CreateLoanRequest request) throws Exception {
+        String requestJson = objectMapper.writeValueAsString(request);
+        String responseJson = mockMvc.perform(post("/loans")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        return objectMapper.readValue(responseJson, Loan.class);
     }
 }

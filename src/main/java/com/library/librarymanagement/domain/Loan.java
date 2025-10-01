@@ -10,4 +10,5 @@ public class Loan {
     private String memberId;
     private LocalDate loanDate;
     private LocalDate dueDate;
+    private LocalDate returnDate;
 }
