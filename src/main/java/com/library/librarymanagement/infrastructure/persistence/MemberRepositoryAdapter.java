@@ -2,6 +2,7 @@ package com.library.librarymanagement.infrastructure.persistence;
 
 import com.library.librarymanagement.domain.Member;
 import com.library.librarymanagement.domain.MemberRepositoryPort;
+import com.library.librarymanagement.infrastructure.persistence.mapper.MemberMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -10,50 +11,31 @@ import java.util.Optional;
 public class MemberRepositoryAdapter implements MemberRepositoryPort {
 
     private final MemberJpaRepository memberJpaRepository;
+    private final MemberMapper memberMapper;
 
-    public MemberRepositoryAdapter(MemberJpaRepository memberJpaRepository) {
+    public MemberRepositoryAdapter(MemberJpaRepository memberJpaRepository,
+                                   MemberMapper memberMapper) {
         this.memberJpaRepository = memberJpaRepository;
+        this.memberMapper = memberMapper;
     }
 
     @Override
     public Member save(Member member) {
-        MemberEntity memberEntity = new MemberEntity();
-        memberEntity.setMemberId(member.getMemberId());
-        memberEntity.setName(member.getName());
-        memberEntity.setEmail(member.getEmail());
-
+        MemberEntity memberEntity = memberMapper.toEntity(member);
         MemberEntity savedEntity = memberJpaRepository.save(memberEntity);
-
-        Member result = new Member();
-        result.setMemberId(savedEntity.getMemberId());
-        result.setName(savedEntity.getName());
-        result.setEmail(savedEntity.getEmail());
-
-        return result;
+        return memberMapper.toDomain(savedEntity);
     }
 
     @Override
     public Optional<Member> findByEmail(String email) {
         Optional<MemberEntity> memberEntityOptional = memberJpaRepository.findByEmail(email);
-        return memberEntityOptional.map(entity -> {
-            Member member = new Member();
-            member.setMemberId(entity.getMemberId());
-            member.setName(entity.getName());
-            member.setEmail(entity.getEmail());
-            return member;
-        });
+        return memberEntityOptional.map(memberMapper::toDomain);
     }
 
     @Override
     public Optional<Member> findById(String memberId) {
         Optional<MemberEntity> memberEntityOptional = memberJpaRepository.findById(memberId);
-        return memberEntityOptional.map(entity -> {
-            Member member = new Member();
-            member.setMemberId(entity.getMemberId());
-            member.setName(entity.getName());
-            member.setEmail(entity.getEmail());
-            return member;
-        });
+        return memberEntityOptional.map(memberMapper::toDomain);
     }
 
     @Override
