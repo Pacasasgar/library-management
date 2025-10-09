@@ -1,4 +1,4 @@
-package com.library.librarymanagement;
+package com.library.librarymanagement.infrastructure.persistence;
 
 import com.library.librarymanagement.domain.Loan;
 import com.library.librarymanagement.infrastructure.persistence.*;

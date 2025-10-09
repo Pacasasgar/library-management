@@ -1,4 +1,4 @@
-package com.library.librarymanagement;
+package com.library.librarymanagement.application;
 
 import com.library.librarymanagement.application.RegisterLoanUseCase;
 import com.library.librarymanagement.domain.Loan;

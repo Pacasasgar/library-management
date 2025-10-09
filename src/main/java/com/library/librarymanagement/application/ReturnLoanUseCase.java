@@ -19,6 +19,10 @@ public class ReturnLoanUseCase {
         Loan existingLoan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new RuntimeException("Loan not found"));
 
+        if (LocalDate.now().isAfter(existingLoan.getDueDate())) {
+            System.out.println("PRE-KAFKA EVENT: Book returned late! LoanId: " + loanId);
+        }
+
         existingLoan.setReturnDate(LocalDate.now());
 
         return loanRepository.save(existingLoan);

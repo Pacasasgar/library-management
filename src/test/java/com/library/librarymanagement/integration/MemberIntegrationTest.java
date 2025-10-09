@@ -1,4 +1,4 @@
-package com.library.librarymanagement;
+package com.library.librarymanagement.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.library.librarymanagement.domain.Member;
