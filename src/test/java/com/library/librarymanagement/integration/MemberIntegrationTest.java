@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -21,7 +22,9 @@ import static org.hamcrest.Matchers.notNullValue;
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-// @DirtiesContext elimina el contexto después de cada test (en este caso) para evitar dependencias entre ellos
+@Transactional
+// @DirtiesContext elimina el contexto después de cada test (en este caso) para evitar dependencias entre ellos. Útil para una base de datos H2 (en memoria).
+// @Transactional hace rollback a la DB después de cada test. Útil para una DB externa.
 class MemberIntegrationTest {
 
     @Autowired
