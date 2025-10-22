@@ -4,8 +4,10 @@ import com.library.librarymanagement.application.*;
 import com.library.librarymanagement.domain.BookRepositoryPort;
 import com.library.librarymanagement.domain.LoanRepositoryPort;
 import com.library.librarymanagement.domain.MemberRepositoryPort;
+import com.library.librarymanagement.domain.event.BookReturnedLateEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.core.KafkaTemplate;
 
 @Configuration
 public class ApplicationConfig {
@@ -56,7 +58,8 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public ReturnLoanUseCase returnLoanUseCase(LoanRepositoryPort loanRepositoryPort) {
-        return new ReturnLoanUseCase(loanRepositoryPort);
+    public ReturnLoanUseCase returnLoanUseCase(LoanRepositoryPort loanRepositoryPort,
+                                               KafkaTemplate<String, BookReturnedLateEvent> kafkaTemplate) {
+        return new ReturnLoanUseCase(loanRepositoryPort, kafkaTemplate);
     }
 }
